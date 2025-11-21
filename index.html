@@ -17,7 +17,7 @@
         }
 
         body {
-            font-family: 'W95FA', 'Fixedsys', 'Terminal', monospace;
+            font-family: 'PMingLiU', '新細明體', 'MS UI Gothic', 'MS Sans Serif', monospace;
             background: #008080;
             min-height: 100vh;
             display: flex;
@@ -649,7 +649,7 @@
         <div class="title-bar">
             <div class="title-bar-text">
                 <span class="title-bar-icon"></span>
-                MP3Cut159 - Audio Cutter
+                MP3Cut159 - 音訊剪裁工具
             </div>
             <!-- 隱藏控制按鈕 -->
             <!-- <div class="title-bar-controls">
@@ -670,21 +670,21 @@
         <div class="window-body">
             <!-- 說明資訊 -->
             <div class="info-text">
-                <strong>Welcome to MP3Cut159 Audio Cutter!</strong><br>
-                • Cuts audio files to 1 minute 59 seconds<br>
-                • Applies fade-out effect from 1:55 to end<br>
-                • Supports: MP3, WAV, M4A, OGG and other audio formats<br>
-                • Batch processing supported - Powered by Web Audio API
+                <strong>歡迎使用 MP3Cut159 音訊剪裁工具！</strong><br>
+                • 自動剪裁音訊檔案至 1 分 59 秒長度<br>
+                • 從 1:55 秒開始套用淡出效果至結尾<br>
+                • 支援格式：MP3、WAV、M4A、OGG 等音訊格式<br>
+                • 支援批次處理 - 採用 Web Audio API 技術
             </div>
 
             <!-- 檔案上傳區 -->
             <div class="group-box">
-                <div class="group-box-label">Select Audio Files</div>
+                <div class="group-box-label">選擇音訊檔案</div>
                 <div class="upload-box" id="uploadArea">
                     <div class="folder-icon"><span></span></div>
                     <div style="font-size: 11px;">
-                        Click here to select files<br>
-                        or drag and drop files here
+                        點擊此處選擇檔案<br>
+                        或拖曳檔案到這裡
                     </div>
                     <input type="file" id="fileInput" accept="audio/*" multiple>
                 </div>
@@ -692,10 +692,10 @@
 
             <!-- 檔案列表 -->
             <div class="group-box">
-                <div class="group-box-label">File List</div>
+                <div class="group-box-label">檔案列表</div>
                 <div class="file-list-box scrollbar" id="fileList">
                     <div style="color: #808080; text-align: center; padding: 20px;">
-                        No files selected
+                        尚未選擇檔案
                     </div>
                 </div>
             </div>
@@ -711,10 +711,10 @@
             <!-- 按鈕 -->
             <div class="button-container">
                 <button class="button button-primary" id="processBtn" disabled>
-                    Start
+                    開始處理
                 </button>
                 <button class="button" id="clearBtn" disabled>
-                    Clear
+                    清除列表
                 </button>
             </div>
 
@@ -722,14 +722,14 @@
 
             <!-- 警告資訊 -->
             <div style="font-size: 11px; color: #808080; text-align: center; padding: 4px;">
-                ⓘ All processed files will be packaged into a ZIP file for download
+                ⓘ 所有處理完成的檔案將會打包成 ZIP 檔案供下載
             </div>
         </div>
 
         <!-- 狀態列 -->
         <div class="status-bar">
-            <div class="status-panel" id="statusText">Ready</div>
-            <div class="status-panel" id="fileCount">0 files</div>
+            <div class="status-panel" id="statusText">就緒</div>
+            <div class="status-panel" id="fileCount">0 個檔案</div>
         </div>
     </div>
 
@@ -737,13 +737,13 @@
     <div class="modal" id="zipModal">
         <div class="modal-window">
             <div class="modal-title-bar">
-                <span>🗜️ Creating ZIP...</span>
+                <span>🗜️ 建立 ZIP 中...</span>
             </div>
             <div class="modal-body">
                 <div class="modal-icon">📦</div>
                 <div class="modal-text" id="zipModalText">
-                    Packaging files into ZIP...<br>
-                    Please wait, this may take a moment.
+                    正在打包檔案至 ZIP 中...<br>
+                    請稍候，這可能需要一些時間。
                 </div>
                 <div class="modal-progress">
                     <div class="modal-progress-bar" id="zipProgressBar"></div>
@@ -808,15 +808,15 @@
             );
 
             if (files.length === 0) {
-                alert('Please select audio files');
+                alert('請選擇音訊檔案');
                 return;
             }
 
             displayFiles();
             processBtn.disabled = false;
             clearBtn.disabled = false;
-            fileCount.textContent = `${files.length} file${files.length > 1 ? 's' : ''}`;
-            statusText.textContent = 'Files loaded - Ready to process';
+            fileCount.textContent = `${files.length} 個檔案`;
+            statusText.textContent = '檔案已載入 - 準備處理';
         }
 
         // 顯示檔案列表
@@ -824,7 +824,7 @@
             fileList.innerHTML = files.map((file, index) => `
                 <div class="file-item" id="file-${index}">
                     <span>${file.name}</span>
-                    <span id="status-${index}" style="color: #808080;">Ready</span>
+                    <span id="status-${index}" style="color: #808080;">就緒</span>
                 </div>
             `).join('');
         }
@@ -840,7 +840,7 @@
             processBtn.disabled = true;
             clearBtn.disabled = true;
             progressContainer.style.display = 'block';
-            statusText.textContent = 'Processing...';
+            statusText.textContent = '處理中...';
             progressBar.style.width = '0%';
             progressText.textContent = '0%';
 
@@ -884,7 +884,7 @@
         // 使用 Web Audio API 處理音訊
         async function processFile(file, index) {
             const statusEl = document.getElementById(`status-${index}`);
-            statusEl.textContent = 'Processing...';
+            statusEl.textContent = '處理中...';
             statusEl.style.color = '#ff8000';
 
             try {
@@ -949,12 +949,12 @@
                 // Add to ZIP IMMEDIATELY
                 zip.file(fileName, wavBlob);
 
-                statusEl.textContent = 'Done';
+                statusEl.textContent = '完成';
                 statusEl.style.color = '#008000';
 
             } catch (error) {
                 console.error('Processing failed:', error);
-                statusEl.textContent = 'Error';
+                statusEl.textContent = '錯誤';
                 statusEl.style.color = '#ff0000';
             }
         }
@@ -968,10 +968,10 @@
 
             try {
                 modal.classList.add('show');
-                statusText.textContent = 'Finalizing ZIP...';
+                statusText.textContent = '正在完成 ZIP...';
                 zipProgressBar.style.width = '50%';
-                zipProgressText.textContent = 'Compressing...';
-                zipModalText.innerHTML = 'Finalizing ZIP file...<br>Almost there!';
+                zipProgressText.textContent = '壓縮中...';
+                zipModalText.innerHTML = '正在完成 ZIP 檔案...<br>快完成了！';
 
                 // Generate ZIP
                 const zipBlob = await zip.generateAsync({
@@ -994,19 +994,19 @@
 
                 // Reset UI
                 isProcessing = false;
-                processBtn.textContent = 'Done!';
+                processBtn.textContent = '完成！';
                 processBtn.disabled = true;
-                statusText.textContent = 'Completed!';
+                statusText.textContent = '已完成！';
                 
                 // Close modal
                 setTimeout(() => {
                     modal.classList.remove('show');
-                    alert('All files processed and downloaded!');
+                    alert('所有檔案已處理完成並下載！');
                 }, 500);
 
             } catch (error) {
                 console.error('ZIP failed:', error);
-                alert('Failed to create ZIP file');
+                alert('建立 ZIP 檔案失敗');
                 modal.classList.remove('show');
             }
         }
@@ -1066,16 +1066,16 @@
             
             files = [];
             zip = null;
-            fileList.innerHTML = '<div style="color: #808080; text-align: center; padding: 20px;">No files selected</div>';
+            fileList.innerHTML = '<div style="color: #808080; text-align: center; padding: 20px;">尚未選擇檔案</div>';
             fileInput.value = '';
             processBtn.disabled = true;
-            processBtn.textContent = 'Start';
+            processBtn.textContent = '開始處理';
             clearBtn.disabled = true;
             progressContainer.style.display = 'none';
             progressBar.style.width = '0%';
             progressText.textContent = '0%';
-            statusText.textContent = 'Ready';
-            fileCount.textContent = '0 files';
+            statusText.textContent = '就緒';
+            fileCount.textContent = '0 個檔案';
         });
     </script>
 </body>
