@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP3Cut159</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: 'W95FA';
+            src: local('MS Sans Serif'), local('Microsoft Sans Serif');
+        }
+
+        body {
+            font-family: 'W95FA', 'Fixedsys', 'Terminal', monospace;
+            background: #008080;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #000000;
+            font-size: 11px;
+            image-rendering: pixelated;
+            -ms-interpolation-mode: nearest-neighbor;
+        }
+
+        .window {
+            background: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #000000;
+            border-bottom: 2px solid #000000;
+            box-shadow: 
+                inset 1px 1px 0px 0px #dfdfdf,
+                inset -1px -1px 0px 0px #808080,
+                1px 1px 0 0.5px rgba(0,0,0,0.1);
+            width: 640px;
+            max-width: 100%;
+            position: relative;
+        }
+
+        .title-bar {
+            background: linear-gradient(to right, 
+                #000080 0%, 
+                #1084d0 100%);
+            color: #ffffff;
+            padding: 2px 3px 2px 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 11px;
+            height: 18px;
+            user-select: none;
+        }
+
+        .title-bar-text {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding-left: 2px;
+        }
+
+        .title-bar-icon {
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, 
+                #0000ff 0%, #0000ff 45%, 
+                #ffffff 45%, #ffffff 55%, 
+                #ff0000 55%, #ff0000 100%);
+            border: 1px solid #000000;
+            display: inline-block;
+            position: relative;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3);
+        }
+
+        .title-bar-icon::before {
+            content: '♪';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            color: #ffffff;
+            text-shadow: 1px 1px 0 #000000;
+            font-weight: bold;
+        }
+
+        /* 隱藏標題列控制按鈕 */
+        /*
+        .title-bar-controls {
+            display: flex;
+            gap: 2px;
+        }
+
+        .title-bar-controls button {
+            width: 16px;
+            height: 14px;
+            background: #c0c0c0;
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid #000000;
+            border-bottom: 1px solid #000000;
+            box-shadow: 
+                inset 1px 1px 0px 0px #dfdfdf,
+                inset -1px -1px 0px 0px #808080;
+            font-size: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Marlett', 'W95FA', monospace;
+        }
+
+        .title-bar-controls button:active {
+            border-top: 1px solid #000000;
+            border-left: 1px solid #000000;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            box-shadow: 
+                inset -1px -1px 0px 0px #dfdfdf,
+                inset 1px 1px 0px 0px #808080;
+            padding: 1px 0 0 1px;
+        }
+        */
+
+        .window-body {
+            padding: 10px;
+        }
+
+        .menu-bar {
+            background: #c0c0c0;
+            padding: 2px;
+            font-size: 11px;
+            display: flex;
+            user-select: none;
+        }
+
+        .menu-bar span {
+            padding: 3px 8px;
+            cursor: default;
+        }
+
+        .menu-bar span:hover {
+            background: #000080;
+            color: #ffffff;
+        }
+
+        .menu-bar span:active {
+            background: #000080;
+            color: #ffffff;
+        }
+
+        .menu-bar span u {
+            text-decoration: underline;
+        }
+
+        .status-bar {
+            background: #c0c0c0;
+            border-top: 1px solid #ffffff;
+            padding: 2px 2px;
+            font-size: 11px;
+            display: flex;
+            gap: 2px;
+            height: 20px;
+            align-items: center;
+        }
+
+        .status-panel {
+            border-top: 1px solid #808080;
+            border-left: 1px solid #808080;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            padding: 2px 6px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-panel:last-child {
+            flex: 0 0 auto;
+            min-width: 80px;
+            justify-content: flex-end;
+        }
+
+        .group-box {
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            box-shadow: 
+                inset 1px 1px 0px 0px #dfdfdf,
+                inset -1px -1px 0px 0px #000000;
+            padding: 16px 8px 8px 8px;
+            margin: 12px 0;
+            position: relative;
+        }
+
+        .group-box-label {
+            position: absolute;
+            top: -9px;
+            left: 6px;
+            background: #c0c0c0;
+            padding: 0 4px;
+            font-size: 11px;
+            color: #000000;
+        }
+
+        .button {
+            background: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #000000;
+            border-bottom: 2px solid #000000;
+            box-shadow: 
+                inset 1px 1px 0px 0px #dfdfdf,
+                inset -1px -1px 0px 0px #808080;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-family: 'W95FA', monospace;
+            cursor: default;
+            min-width: 75px;
+            min-height: 23px;
+            user-select: none;
+            position: relative;
+        }
+
+        .button:active:not(:disabled) {
+            border-top: 2px solid #000000;
+            border-left: 2px solid #000000;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            box-shadow: 
+                inset -1px -1px 0px 0px #dfdfdf,
+                inset 1px 1px 0px 0px #808080;
+            padding: 5px 11px 3px 13px;
+        }
+
+        .button:disabled {
+            color: #808080;
+            text-shadow: 1px 1px 0 #ffffff;
+            cursor: default;
+        }
+
+        .button:disabled:active {
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #000000;
+            border-bottom: 2px solid #000000;
+            padding: 4px 12px;
+        }
+
+        .button-primary {
+            border: 1px solid #000000;
+            padding: 5px 13px;
+        }
+
+        .button-primary::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            right: 3px;
+            bottom: 3px;
+            border: 1px dotted #000000;
+            pointer-events: none;
+        }
+
+        .button-primary:active:not(:disabled)::before {
+            top: 4px;
+            left: 4px;
+        }
+
+        .text-input {
+            background: #ffffff;
+            border-top: 1px solid #000000;
+            border-left: 1px solid #000000;
+            border-right: 1px solid #dfdfdf;
+            border-bottom: 1px solid #dfdfdf;
+            box-shadow: 
+                inset 1px 1px 0px 0px #808080,
+                inset -1px -1px 0px 0px #ffffff;
+            padding: 3px 4px;
+            font-size: 11px;
+            font-family: 'W95FA', monospace;
+            width: 100%;
+        }
+
+        .text-input:focus {
+            outline: none;
+        }
+
+        .upload-box {
+            background: #ffffff;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            box-shadow: 
+                inset 1px 1px 0px 0px #000000,
+                inset -1px -1px 0px 0px #dfdfdf;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: default;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload-box:active {
+            background: #ffffff;
+        }
+
+        .file-list-box {
+            background: #ffffff;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            box-shadow: 
+                inset 1px 1px 0px 0px #000000,
+                inset -1px -1px 0px 0px #dfdfdf;
+            padding: 2px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 11px;
+            min-height: 100px;
+        }
+
+        .file-item {
+            padding: 1px 4px;
+            display: flex;
+            justify-content: space-between;
+            cursor: default;
+            user-select: none;
+        }
+
+        .file-item:hover {
+            background: #000080;
+            color: #ffffff;
+        }
+
+        .file-item.selected {
+            background: #000080;
+            color: #ffffff;
+        }
+
+        .progress-container {
+            background: #ffffff;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            box-shadow: 
+                inset 1px 1px 0px 0px #000000,
+                inset -1px -1px 0px 0px #dfdfdf;
+            padding: 3px;
+            margin: 10px 0;
+            display: none;
+            position: relative;
+        }
+
+        .progress-bar-bg {
+            height: 18px;
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #000080;
+            width: 0%;
+            transition: width 0.2s linear;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .progress-text {
+            color: #000000;
+            font-size: 11px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ZIP 打包對話框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-window {
+            background: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #000000;
+            border-bottom: 2px solid #000000;
+            box-shadow: 
+                inset 1px 1px 0px 0px #dfdfdf,
+                inset -1px -1px 0px 0px #808080,
+                2px 2px 8px rgba(0,0,0,0.5);
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .modal-title-bar {
+            background: linear-gradient(to right, #000080 0%, #1084d0 100%);
+            color: #ffffff;
+            padding: 2px 3px;
+            font-weight: bold;
+            font-size: 11px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .modal-body {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            font-size: 11px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .modal-progress {
+            background: #ffffff;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            box-shadow: 
+                inset 1px 1px 0px 0px #000000,
+                inset -1px -1px 0px 0px #dfdfdf;
+            padding: 3px;
+            margin: 10px 0;
+        }
+
+        .modal-progress-bar {
+            height: 18px;
+            background: #000080;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .info-text {
+            background: #ffffc0;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            box-shadow: 
+                inset 1px 1px 0px 0px #000000,
+                inset -1px -1px 0px 0px #dfdfdf;
+            padding: 8px;
+            margin: 8px 0;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .scrollbar::-webkit-scrollbar {
+            width: 16px;
+            height: 16px;
+        }
+
+        .scrollbar::-webkit-scrollbar-track {
+            background: #ffffff;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    #dfdfdf 0px,
+                    #dfdfdf 2px,
+                    #ffffff 2px,
+                    #ffffff 4px
+                );
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #000000;
+            border-bottom: 2px solid #000000;
+            box-shadow: 
+                inset 1px 1px 0px 0px #dfdfdf,
+                inset -1px -1px 0px 0px #808080;
+        }
+
+        .scrollbar::-webkit-scrollbar-button:vertical:decrement {
+            background: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #000000;
+            border-bottom: 2px solid #000000;
+            background-image: 
+                linear-gradient(to bottom, transparent 40%, #000000 40%, #000000 45%, transparent 45%),
+                linear-gradient(to right, transparent 35%, #000000 35%, #000000 40%, transparent 40%, transparent 60%, #000000 60%, #000000 65%, transparent 65%);
+        }
+
+        .scrollbar::-webkit-scrollbar-button:vertical:increment {
+            background: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #000000;
+            border-bottom: 2px solid #000000;
+            background-image: 
+                linear-gradient(to bottom, transparent 55%, #000000 55%, #000000 60%, transparent 60%),
+                linear-gradient(to right, transparent 35%, #000000 35%, #000000 40%, transparent 40%, transparent 60%, #000000 60%, #000000 65%, transparent 65%);
+        }
+
+        /* Windows 95 開啟資料夾圖示（像素完美版）*/
+        .folder-icon {
+            width: 64px;
+            height: 56px;
+            position: relative;
+            margin: 0 auto 10px;
+            image-rendering: pixelated;
+        }
+
+        /* 資料夾背後的陰影/後層 */
+        .folder-icon::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 52px;
+            height: 44px;
+            background: #ffff00;
+            border: 2px solid #000000;
+            box-shadow: 
+                inset 1px 1px 0 #ffff80,
+                inset -1px -1px 0 #808000;
+        }
+
+        /* 資料夾主體 */
+        .folder-icon::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 0;
+            width: 56px;
+            height: 42px;
+            background: linear-gradient(135deg, 
+                #ffff00 0%, 
+                #ffff00 48%, 
+                #ffff80 48%, 
+                #ffff80 52%, 
+                #ffff00 52%);
+            border: 2px solid #000000;
+            box-shadow: 
+                inset 2px 2px 0 rgba(255,255,255,0.6),
+                inset -2px -2px 0 rgba(0,0,0,0.3),
+                2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* 資料夾標籤 */
+        .folder-icon > span {
+            position: absolute;
+            top: 0;
+            left: 4px;
+            width: 28px;
+            height: 12px;
+            background: linear-gradient(to bottom, #808080 0%, #606060 100%);
+            border: 1px solid #000000;
+            border-bottom: none;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            box-shadow: inset 1px 1px 0 rgba(255,255,255,0.3);
+            z-index: 1;
+        }
+
+        /* 資料夾開口高光 */
+        .folder-icon > span::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, 
+                rgba(255,255,255,0.6), 
+                transparent 80%);
+        }
+
+        @media (max-width: 640px) {
+            .window {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        .separator {
+            height: 2px;
+            background: linear-gradient(to bottom, #808080, #dfdfdf);
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <!-- 標題列 -->
+        <div class="title-bar">
+            <div class="title-bar-text">
+                <span class="title-bar-icon"></span>
+                MP3Cut159 - Audio Cutter
+            </div>
+            <!-- 隱藏控制按鈕 -->
+            <!-- <div class="title-bar-controls">
+                <button aria-label="Minimize">_</button>
+                <button aria-label="Maximize">□</button>
+                <button aria-label="Close">×</button>
+            </div> -->
+        </div>
+
+        <!-- 選單列 - 隱藏 -->
+        <!-- <div class="menu-bar">
+            <span><u>F</u>ile</span>
+            <span><u>E</u>dit</span>
+            <span><u>H</u>elp</span>
+        </div> -->
+
+        <!-- 視窗內容 -->
+        <div class="window-body">
+            <!-- 說明資訊 -->
+            <div class="info-text">
+                <strong>Welcome to MP3Cut159 Audio Cutter!</strong><br>
+                • Cuts audio files to 1 minute 59 seconds<br>
+                • Applies fade-out effect from 1:55 to end<br>
+                • Supports: MP3, WAV, M4A, OGG and other audio formats<br>
+                • Batch processing supported - Powered by Web Audio API
+            </div>
+
+            <!-- 檔案上傳區 -->
+            <div class="group-box">
+                <div class="group-box-label">Select Audio Files</div>
+                <div class="upload-box" id="uploadArea">
+                    <div class="folder-icon"><span></span></div>
+                    <div style="font-size: 11px;">
+                        Click here to select files<br>
+                        or drag and drop files here
+                    </div>
+                    <input type="file" id="fileInput" accept="audio/*" multiple>
+                </div>
+            </div>
+
+            <!-- 檔案列表 -->
+            <div class="group-box">
+                <div class="group-box-label">File List</div>
+                <div class="file-list-box scrollbar" id="fileList">
+                    <div style="color: #808080; text-align: center; padding: 20px;">
+                        No files selected
+                    </div>
+                </div>
+            </div>
+
+            <!-- 進度條 -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="progress-text" id="progressText">0%</div>
+                </div>
+            </div>
+
+            <!-- 按鈕 -->
+            <div class="button-container">
+                <button class="button button-primary" id="processBtn" disabled>
+                    Start
+                </button>
+                <button class="button" id="clearBtn" disabled>
+                    Clear
+                </button>
+            </div>
+
+            <div class="separator"></div>
+
+            <!-- 警告資訊 -->
+            <div style="font-size: 11px; color: #808080; text-align: center; padding: 4px;">
+                ⓘ All processed files will be packaged into a ZIP file for download
+            </div>
+        </div>
+
+        <!-- 狀態列 -->
+        <div class="status-bar">
+            <div class="status-panel" id="statusText">Ready</div>
+            <div class="status-panel" id="fileCount">0 files</div>
+        </div>
+    </div>
+
+    <!-- ZIP 打包對話框 -->
+    <div class="modal" id="zipModal">
+        <div class="modal-window">
+            <div class="modal-title-bar">
+                <span>🗜️ Creating ZIP...</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-icon">📦</div>
+                <div class="modal-text" id="zipModalText">
+                    Packaging files into ZIP...<br>
+                    Please wait, this may take a moment.
+                </div>
+                <div class="modal-progress">
+                    <div class="modal-progress-bar" id="zipProgressBar"></div>
+                </div>
+                <div style="font-size: 11px; color: #808080;" id="zipProgressText">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <script>
+        let files = [];
+        let isProcessing = false;
+        let zip = null; // Global ZIP instance
+        let completedCount = 0;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const processBtn = document.getElementById('processBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const statusText = document.getElementById('statusText');
+        const fileCount = document.getElementById('fileCount');
+
+        // 初始化：確保進度條正確顯示
+        progressBar.style.width = '0%';
+        progressText.textContent = '0%';
+
+        // 上傳區域點擊
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // 拖曳功能
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#f0f0f0';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = '#ffffff';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#ffffff';
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // 檔案選擇
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(fileListInput) {
+            files = Array.from(fileListInput).filter(file => 
+                file.type.startsWith('audio/')
+            );
+
+            if (files.length === 0) {
+                alert('Please select audio files');
+                return;
+            }
+
+            displayFiles();
+            processBtn.disabled = false;
+            clearBtn.disabled = false;
+            fileCount.textContent = `${files.length} file${files.length > 1 ? 's' : ''}`;
+            statusText.textContent = 'Files loaded - Ready to process';
+        }
+
+        // 顯示檔案列表
+        function displayFiles() {
+            fileList.innerHTML = files.map((file, index) => `
+                <div class="file-item" id="file-${index}">
+                    <span>${file.name}</span>
+                    <span id="status-${index}" style="color: #808080;">Ready</span>
+                </div>
+            `).join('');
+        }
+
+        // 開始處理 (Parallel Version)
+        processBtn.addEventListener('click', async () => {
+            if (isProcessing) return;
+            
+            isProcessing = true;
+            zip = new JSZip(); // Initialize ZIP immediately
+            completedCount = 0;
+            
+            processBtn.disabled = true;
+            clearBtn.disabled = true;
+            progressContainer.style.display = 'block';
+            statusText.textContent = 'Processing...';
+            progressBar.style.width = '0%';
+            progressText.textContent = '0%';
+
+            // Concurrency Control
+            const CONCURRENCY = 4; // Process 4 files at a time
+            const queue = files.map((file, index) => ({ file, index }));
+            let activeWorkers = 0;
+
+            const processNext = async () => {
+                // Check if all done
+                if (queue.length === 0 && activeWorkers === 0) {
+                    await finalizeZip();
+                    return;
+                }
+
+                // Fill workers
+                while (activeWorkers < CONCURRENCY && queue.length > 0) {
+                    const { file, index } = queue.shift();
+                    activeWorkers++;
+                    
+                    // Process file
+                    processFile(file, index).then(() => {
+                        activeWorkers--;
+                        completedCount++;
+                        
+                        // Update global progress
+                        const progress = (completedCount / files.length) * 100;
+                        progressBar.style.width = `${progress}%`;
+                        progressText.textContent = `${Math.round(progress)}%`;
+                        
+                        // Trigger next
+                        processNext();
+                    });
+                }
+            };
+
+            // Start the loop
+            processNext();
+        });
+
+        // 使用 Web Audio API 處理音訊
+        async function processFile(file, index) {
+            const statusEl = document.getElementById(`status-${index}`);
+            statusEl.textContent = 'Processing...';
+            statusEl.style.color = '#ff8000';
+
+            try {
+                // 讀取音訊檔案
+                const arrayBuffer = await file.arrayBuffer();
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+                // 計算目標長度 (精確計算)
+                const originalDuration = audioBuffer.duration;
+                const MAX_DURATION = 119; // 1:59 = 119秒
+                
+                // 如果原始長度小於 119秒，保持原長；否則嚴格剪裁到 119秒
+                const targetDuration = Math.min(originalDuration, MAX_DURATION);
+                
+                // 淡出設定：從 115秒 (1:55) 開始，持續 4秒
+                // 如果總長度不足 4秒，則不做淡出（或全淡出，視需求）
+                const fadeDuration = 4;
+                const fadeStartTime = Math.max(0, targetDuration - fadeDuration);
+
+                // 建立新的音訊緩衝區
+                const sampleRate = audioBuffer.sampleRate;
+                const numberOfChannels = audioBuffer.numberOfChannels;
+                
+                // 精確計算總 sample 數 (向下取整，確保不超過)
+                const targetLength = Math.floor(targetDuration * sampleRate);
+                
+                const newBuffer = audioContext.createBuffer(
+                    numberOfChannels,
+                    targetLength,
+                    sampleRate
+                );
+
+                // 複製音訊資料並套用淡出
+                for (let channel = 0; channel < numberOfChannels; channel++) {
+                    const oldData = audioBuffer.getChannelData(channel);
+                    const newData = newBuffer.getChannelData(channel);
+                    
+                    // 只複製到 targetLength，確保長度精確
+                    for (let i = 0; i < targetLength; i++) {
+                        // 安全檢查：避免讀取超出原始數據
+                        if (i >= oldData.length) break;
+                        
+                        newData[i] = oldData[i];
+                        
+                        // 套用淡出效果
+                        const currentTime = i / sampleRate;
+                        if (currentTime >= fadeStartTime) {
+                            // 線性淡出 (1 -> 0)
+                            const fadeProgress = (currentTime - fadeStartTime) / fadeDuration;
+                            // 確保 progress 在 0~1 之間
+                            const cleanProgress = Math.max(0, Math.min(1, fadeProgress));
+                            newData[i] *= (1 - cleanProgress);
+                        }
+                    }
+                }
+
+                // 轉換為 WAV 格式
+                const wavBlob = audioBufferToWav(newBuffer);
+                const fileName = file.name.replace(/\.[^/.]+$/, '') + '_cut.wav';
+                
+                // Add to ZIP IMMEDIATELY
+                zip.file(fileName, wavBlob);
+
+                statusEl.textContent = 'Done';
+                statusEl.style.color = '#008000';
+
+            } catch (error) {
+                console.error('Processing failed:', error);
+                statusEl.textContent = 'Error';
+                statusEl.style.color = '#ff0000';
+            }
+        }
+
+        // 完成並下載 ZIP
+        async function finalizeZip() {
+            const modal = document.getElementById('zipModal');
+            const zipProgressBar = document.getElementById('zipProgressBar');
+            const zipProgressText = document.getElementById('zipProgressText');
+            const zipModalText = document.getElementById('zipModalText');
+
+            try {
+                modal.classList.add('show');
+                statusText.textContent = 'Finalizing ZIP...';
+                zipProgressBar.style.width = '50%';
+                zipProgressText.textContent = 'Compressing...';
+                zipModalText.innerHTML = 'Finalizing ZIP file...<br>Almost there!';
+
+                // Generate ZIP
+                const zipBlob = await zip.generateAsync({
+                    type: 'blob',
+                    compression: 'STORE' // No compression for speed
+                }, (metadata) => {
+                    const progress = metadata.percent;
+                    zipProgressBar.style.width = `${progress}%`;
+                    zipProgressText.textContent = `${Math.round(progress)}%`;
+                });
+
+                // Download
+                const url = URL.createObjectURL(zipBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                const timestamp = new Date().toISOString().slice(0,10).replace(/-/g, '');
+                a.download = `MP3Cut159_${timestamp}.zip`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                // Reset UI
+                isProcessing = false;
+                processBtn.textContent = 'Done!';
+                processBtn.disabled = true;
+                statusText.textContent = 'Completed!';
+                
+                // Close modal
+                setTimeout(() => {
+                    modal.classList.remove('show');
+                    alert('All files processed and downloaded!');
+                }, 500);
+
+            } catch (error) {
+                console.error('ZIP failed:', error);
+                alert('Failed to create ZIP file');
+                modal.classList.remove('show');
+            }
+        }
+
+        // 將 AudioBuffer 轉換為 WAV
+        function audioBufferToWav(buffer) {
+            const numberOfChannels = buffer.numberOfChannels;
+            const length = buffer.length * numberOfChannels * 2;
+            const arrayBuffer = new ArrayBuffer(44 + length);
+            const view = new DataView(arrayBuffer);
+            const channels = [];
+            let offset = 0;
+            let pos = 0;
+
+            // WAV header
+            setString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + length, true);
+            setString(view, 8, 'WAVE');
+            setString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numberOfChannels, true);
+            view.setUint32(24, buffer.sampleRate, true);
+            view.setUint32(28, buffer.sampleRate * numberOfChannels * 2, true);
+            view.setUint16(32, numberOfChannels * 2, true);
+            view.setUint16(34, 16, true);
+            setString(view, 36, 'data');
+            view.setUint32(40, length, true);
+
+            // 寫入音訊資料
+            for (let i = 0; i < numberOfChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+
+            offset = 44;
+            while (pos < buffer.length) {
+                for (let i = 0; i < numberOfChannels; i++) {
+                    const sample = Math.max(-1, Math.min(1, channels[i][pos]));
+                    view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+                    offset += 2;
+                }
+                pos++;
+            }
+
+            return new Blob([arrayBuffer], { type: 'audio/wav' });
+        }
+
+        function setString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        // 清除列表
+        clearBtn.addEventListener('click', () => {
+            if (isProcessing) return;
+            
+            files = [];
+            zip = null;
+            fileList.innerHTML = '<div style="color: #808080; text-align: center; padding: 20px;">No files selected</div>';
+            fileInput.value = '';
+            processBtn.disabled = true;
+            processBtn.textContent = 'Start';
+            clearBtn.disabled = true;
+            progressContainer.style.display = 'none';
+            progressBar.style.width = '0%';
+            progressText.textContent = '0%';
+            statusText.textContent = 'Ready';
+            fileCount.textContent = '0 files';
+        });
+    </script>
+</body>
+</html>
+
